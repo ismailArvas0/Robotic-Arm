@@ -1,0 +1,222 @@
+#include <Deneyap_HareketIsikRenkAlgilayiciMesafeOlcer.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
+Adafruit_PWMServoDriver pwm;
+APDS9960 Renk;
+uint16_t r, g, b, c;
+int motor1Pin1 = 3;    // L298'deki IN1 pinine bağlı pin
+int motor1Pin2 = 2;    // L298'deki IN2 pinine bağlı pin
+int motorEna = 9; 
+#define SERVO_MIN 110
+#define SERVO_MAX 490
+void setup() {
+    pwm.begin();
+  pwm.setPWMFreq(50); // 50Hz servos
+  Serial.begin(115200);
+  pinMode(motor1Pin1, OUTPUT);
+  pinMode(motor1Pin2, OUTPUT);
+  if (!Renk.begin(0x39)) {
+    delay(3000);
+    Serial.println("I2C bağlantısı başarısız");
+  }
+  Renk.enableColor(true);
+}
+void loop() {
+  Renk.getColorData(&r, &g, &b, &c);
+  Serial.print("kirmizi: ");
+  Serial.print(r);
+  // Kırmızı algılama eşik değerini kontrol et
+  if (r > 35) { // Burada direk sayı olarak kontrol edilebilir.
+    // Kırmızı algılandığında motoru döndür
+    delay(500);
+    motorStart();
+    delay(3050);
+    motorStop();
+robotArmA();
+  }
+else if(g > 20){
+  delay(500);
+   motorStart();
+    delay(3050);
+    motorStop();
+robotArmB();
+}
+else if(b > 35){
+  delay(500);
+   motorStart();
+    delay(3050);
+    motorStop();
+robotArmC();
+}
+   else {
+motorStop();
+}
+}
+void moveServo(int servoNum, int degrees) {
+  // Dereceyi PWM değerine dönüştür
+  int pwmValue = map(degrees, 0, 180, SERVO_MIN, SERVO_MAX);
+  pwm.setPWM(servoNum, 0, pwmValue);
+}
+void motorStart(){
+   analogWrite(motorEna, 50);     // Hız ayarı yapılıyor (0-255 arası yazılabilir)
+    digitalWrite(motor1Pin1, LOW);  // Dönüş yönü IN1-IN2 pinlerinin hangisinin HIGH
+  digitalWrite(motor1Pin2, HIGH);   // hangisinin LOW yapıldığıyla ayarlanıyor
+}
+void motorStop(){
+      digitalWrite(motor1Pin1, LOW);
+    digitalWrite(motor1Pin2, LOW);
+}
+void robotArmA(){
+ for(int derece = 90; derece < 170; derece++){ // bel
+  moveServo(1, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 180; derece > 130; derece--){ // bilek
+moveServo(0, derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 20; derece < 110; derece++){ // el
+moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 70; derece < 105; derece++){ // kol
+moveServo(2, derece);
+delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 110; derece >  30; derece--){ // el
+moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 105; derece > 60; derece--){ // kol
+moveServo(2, derece);
+delay(10); // 10 milisaniye bekleyin
+}
+for(int derece = 125; derece < 180; derece++){ // bilek
+moveServo(0, derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 170; derece > 90; derece--){ // bel
+moveServo(1, derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 60; derece > 30; derece--){ // kol
+moveServo(2, derece);
+delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 30; derece < 110; derece++){ // el
+moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 110; derece >  20; derece--){ // el
+moveServo(3, derece);
+}
+}
+void robotArmB()
+{
+for(int derece = 90; derece < 170; derece++){ // bel
+moveServo(1, derece);
+delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 180; derece > 130; derece--){ // bilek
+moveServo(0, derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 20; derece < 110; derece++){ // el
+moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 70; derece < 105; derece++){ // kol
+  moveServo(2, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 110; derece >  30; derece--){ // el
+  moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 105; derece > 60; derece--){ // kol
+  moveServo(2, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+for(int derece = 125; derece < 180; derece++){ // bilek
+  moveServo(0, derece);
+  delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 170; derece > 60; derece--){ // bel
+  moveServo(1, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 60; derece < 100; derece++){ // kol
+  moveServo(2, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 30; derece < 110; derece++){ // el
+  moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 110; derece >  20; derece--){ // el
+  moveServo(3, derece);
+}
+}
+void robotArmC(){
+   for(int derece = 90; derece < 170; derece++){ // bel
+  moveServo(1, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 180; derece > 130; derece--){ // bilek
+  moveServo(0, derece);
+  delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 20; derece < 110; derece++){ // el
+  moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 70; derece < 105; derece++){ // kol
+  moveServo(2, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 110; derece >  30; derece--){ // el
+  moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 105; derece > 60; derece--){ // kol
+  moveServo(2, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+for(int derece = 125; derece < 180; derece++){ // bilek
+  moveServo(0, derece);
+  delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 170; derece > 40; derece--){ // bel
+  moveServo(1, derece);
+  delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 60; derece > 30; derece--){ // kol
+  moveServo(2, derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 30; derece < 110; derece++){ // el
+  moveServo(3, derece);
+}
+delay(1000);
+for(int derece = 110; derece >  20; derece--){ // el
+  moveServo(3, derece);
+}
+}
