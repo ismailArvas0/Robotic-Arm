@@ -1,0 +1,284 @@
+#define s0 4
+#define s1 5
+#define s2 6
+#define s3 7
+#define cikis 8 
+int kirmizi, mavi, yesil = 0;
+#include <Wire.h>
+#include <Servo.h>
+int motor1Pin1 = 1;    // L298'deki IN1 pinine bağlı pin
+int motor1Pin2 = 2;    // L298'deki IN2 pinine bağlı pin
+int motorEna = 3; 
+const int servoPin1 = 9;
+const int servoPin2 = 10;
+const int servoPin3 = 11;
+const int servoPin4 = 12;
+Servo el;
+Servo bilek;
+Servo bel;
+Servo kol;
+
+void setup() {
+  pinMode(s0, OUTPUT);
+  pinMode(s1, OUTPUT);
+  pinMode(s2, OUTPUT);
+  pinMode(s3, OUTPUT);
+  pinMode(cikis, INPUT);
+  digitalWrite(s0, HIGH);
+  digitalWrite(s1, LOW);
+  Serial.begin(9600);
+  el.attach(servoPin1);
+  bilek.attach(servoPin2);
+  bel.attach(servoPin3);
+  kol.attach(servoPin4);
+  pinMode(motor1Pin1, OUTPUT);
+  pinMode(motor1Pin2, OUTPUT);
+   
+}
+
+void loop() {
+  kalibre();
+  //renk();
+}
+
+void kalibre() {
+  // Kırmızı Renk Kalibresi
+  digitalWrite(s2, LOW);
+  digitalWrite(s3, LOW);
+  kirmizi = pulseIn(cikis, LOW);
+  Serial.print("Kırmızı Renk Değeri: ");
+  Serial.print(kirmizi);
+  Serial.print("\t");
+
+  // Mavi Renk Kalibresi
+  digitalWrite(s2, LOW);
+  digitalWrite(s3, HIGH);
+  mavi = pulseIn(cikis, LOW);
+  Serial.print("Mavi Renk Değeri: ");
+  Serial.print(mavi);
+  Serial.print("\t");
+
+  // Yeşil Renk Kalibresi
+  digitalWrite(s2, HIGH);
+  digitalWrite(s3, HIGH);
+  yesil = pulseIn(cikis, LOW);
+  Serial.print("Yeşil Renk Değeri: ");
+  Serial.print(yesil);
+  Serial.println("\t");
+
+  // Sensör değerlerini 0-100 aralığına yeniden haritala
+  //kirmizi = map(kirmizi, minKirmizi, maxKirmizi, 0, 100);
+  //mavi = map(mavi, minMavi, maxMavi, 0, 100);
+ // yesil = map(yesil, minYesil, maxYesil, 0, 100);
+}
+
+void renk() {
+  if (kirmizi < mavi && kirmizi < yesil) {
+    // Kırmızı algılandıysa yapılacak işlemler
+motorStart();
+motorStop();
+for(int derece = 90; derece < 175; derece++){ // bel
+  bel.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 100; derece > 70; derece--){ // kol
+kol.write(derece);
+delay(20); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 180; derece > 130; derece--){ // bilek
+bilek.write(derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+
+for(int derece = 0; derece < 90; derece++){ // el
+el.write(derece);
+delay(5);
+}
+delay(1500);
+for(int derece = 70; derece < 110; derece++){ // kol
+kol.write(derece);
+delay(20); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 90; derece > 0; derece--){ // el
+el.write(derece);
+}
+delay(1000);
+for(int derece = 105; derece > 60; derece--){ // kol
+kol.write(derece);
+delay(10); // 10 milisaniye bekleyin
+}
+for(int derece = 125; derece < 180; derece++){ // bilek
+bilek.write(derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 170; derece > 90; derece--){ // bel
+bel.write(derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 60; derece > 30; derece--){ // kol
+kol.write(derece);
+delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 0; derece < 90; derece++){ // el
+el.write(derece);
+}
+delay(1000);
+for(int derece = 90; derece >  0; derece--){ // el
+el.write(derece);
+}
+
+  } 
+
+
+
+  else if (mavi < kirmizi && mavi < yesil) {
+    // Mavi algılandıysa yapılacak işlemler
+  motorStart();
+motorStop();
+for(int derece = 90; derece < 175; derece++){ // bel
+  bel.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 100; derece > 70; derece--){ // kol
+kol.write(derece);
+delay(20); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 180; derece > 130; derece--){ // bilek
+bilek.write(derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 10; derece < 90; derece++){ // el
+  el.write(derece);
+  delay(5);
+}
+delay(1500);
+for(int derece = 70; derece < 115; derece++){ // kol
+  kol.write(derece);
+  delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 90; derece >  10; derece--){ // el
+  el.write(derece);
+}
+delay(1000);
+for(int derece = 105; derece > 60; derece--){ // kol
+  kol.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+for(int derece = 125; derece < 180; derece++){ // bilek
+  bilek.write(derece);
+  delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 170; derece > 40; derece--){ // bel
+  bel.write(derece);
+  delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 60; derece > 30; derece--){ // kol
+  kol.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 10; derece < 90; derece++){ // el
+  el.write(derece);
+}
+delay(1000);
+for(int derece = 90; derece >  10; derece--){ // el
+  el.write(derece);
+}
+  } 
+
+
+  else if (yesil < kirmizi && yesil < mavi) {
+    // Yeşil algılandıysa yapılacak işlemler
+    motorStart();
+motorStop();
+       for(int derece = 90; derece < 175; derece++){ // bel
+bel.write(derece);
+delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 100; derece > 70; derece--){ // kol
+kol.write(derece);
+delay(20); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 180; derece > 130; derece--){ // bilek
+bilek.write(derece);
+delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 0; derece < 90; derece++){ // el
+el.write(derece);
+delay(5);
+}
+delay(1500);
+for(int derece = 70; derece < 115; derece++){ // kol
+  kol.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 90; derece >  0; derece--){ // el
+  el.write(derece);
+}
+delay(1000);
+for(int derece = 105; derece > 60; derece--){ // kol
+  kol.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+for(int derece = 120; derece < 180; derece++){ // bilek
+  bilek.write(derece);
+  delay(15); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 170; derece > 60; derece--){ // bel
+  bel.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 60; derece < 100; derece++){ // kol
+  kol.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+delay(1000);
+for(int derece = 0; derece < 90; derece++){ // el
+  el.write(derece);
+}
+delay(1000);
+for(int derece = 90; derece >  0; derece--){ // el
+  el.write(derece);
+}
+delay(1000);
+for(int derece = 100; derece > 60; derece--){ // kol
+  kol.write(derece);
+  delay(10); // 10 milisaniye bekleyin
+}
+  }
+  else{
+    bel.write(170); // bel kutuyu alma konumunda
+    kol.write(90);
+    bilek.write(140);
+    el.write(0);  
+  }
+}
+void motorStart(){
+   analogWrite(motorEna, 50);     // Hız ayarı yapılıyor (0-255 arası yazılabilir)
+    digitalWrite(motor1Pin1, LOW);  // bir pini low diğerini hıgh yaparak yçnü ayarlıyoruz
+  digitalWrite(motor1Pin2, HIGH);   
+    delay(3125);
+}
+void motorStop(){
+   digitalWrite(motor1Pin1, LOW);  // motoru low durmma konuma geliyor
+  digitalWrite(motor1Pin2, LOW);   // hangisinin LOW yapıldığıyla ayarlanıyor
+}
